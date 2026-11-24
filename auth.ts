@@ -7,7 +7,7 @@ import { clearLoginAttempts, loginIsLimited, recordLoginAttempt } from "@/lib/ra
 import { findUserByEmail } from "@/lib/users";
 import { loginSchema } from "@/lib/validators";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
@@ -41,8 +41,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     ...authConfig.callbacks,
-    jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user?.id) token.id = user.id;
+      if (trigger === "update" && typeof token.id === "string") {
+        const { findUserById } = await import("@/lib/account");
+        const record = await findUserById(token.id);
+        if (record) {
+          token.email = record.email;
+          token.name = record.name;
+        }
+      }
       return token;
     },
     session({ session, token }) {

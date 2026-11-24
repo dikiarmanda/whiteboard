@@ -6,7 +6,7 @@ export function AppHeader({
   current,
 }: {
   name: string;
-  current: "boards" | "trash";
+  current: "boards" | "trash" | "settings";
 }) {
   return (
     <header className="studio bg-studio text-paper">
@@ -32,6 +32,13 @@ export function AppHeader({
         </nav>
         <div className="ml-auto flex items-center gap-3 text-sm">
           <span className="max-w-40 truncate text-paper/75">{name}</span>
+          <Link
+            href="/settings"
+            className={current === "settings" ? "nav-link is-on" : "nav-link"}
+            aria-current={current === "settings" ? "page" : undefined}
+          >
+            Pengaturan
+          </Link>
           <form
             action={async () => {
               "use server";

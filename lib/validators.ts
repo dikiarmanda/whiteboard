@@ -11,6 +11,17 @@ export const createUserSchema = z.object({
   password: z.string().min(8).max(200),
 });
 
+export const changeEmailSchema = z.object({
+  email: z.email().max(320),
+  currentPassword: z.string().min(1).max(200),
+});
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1).max(200),
+  password: z.string().min(8).max(200),
+  confirmPassword: z.string().min(1).max(200),
+});
+
 export const titleSchema = z.string().trim().min(1).max(200);
 
 export const listQuerySchema = z.object({

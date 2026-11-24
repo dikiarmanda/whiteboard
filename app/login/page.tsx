@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { PublicBar } from "@/components/public-bar";
+import { safeNextPath } from "@/lib/format";
 import { getSession } from "@/lib/session";
 import { LoginForm } from "./login-form";
 
@@ -15,8 +16,7 @@ async function LoginContent({
 
   const params = await searchParams;
   const raw = Array.isArray(params.callbackUrl) ? params.callbackUrl[0] : params.callbackUrl;
-  const callbackUrl =
-    raw && (raw.startsWith("/boards") || raw.startsWith("/board/")) ? raw : "/boards";
+  const callbackUrl = safeNextPath(raw ?? null);
 
   return <LoginForm callbackUrl={callbackUrl} />;
 }

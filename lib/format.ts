@@ -20,6 +20,13 @@ export function clientIp(headers: Headers) {
 
 export function safeNextPath(value: FormDataEntryValue | null) {
   if (typeof value !== "string") return "/boards";
-  if (value.startsWith("/boards") || value.startsWith("/board/")) return value;
+  if (
+    value.startsWith("/boards") ||
+    value.startsWith("/board/") ||
+    value === "/settings" ||
+    value.startsWith("/settings/")
+  ) {
+    return value;
+  }
   return "/boards";
 }

@@ -26,7 +26,11 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request }) {
       const { pathname } = request.nextUrl;
-      const needsAuth = pathname.startsWith("/boards") || pathname.startsWith("/board/");
+      const needsAuth =
+        pathname.startsWith("/boards") ||
+        pathname.startsWith("/board/") ||
+        pathname === "/settings" ||
+        pathname.startsWith("/settings/");
       if (!needsAuth) return true;
       return !!auth?.user;
     },
