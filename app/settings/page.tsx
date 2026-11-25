@@ -15,10 +15,10 @@ async function SettingsContent() {
   return (
     <>
       <AppHeader name={user.name || user.email} current="settings" />
-      <main className="mx-auto max-w-xl px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-xl px-4 py-10 sm:px-6">
         <h1 className="font-display text-4xl tracking-tight">Pengaturan</h1>
-        <p className="mt-2 text-muted">Ganti email masuk atau kata sandi akun ini.</p>
-        <div className="mt-8 grid gap-6">
+        <p className="mt-3 text-muted">Ganti email masuk atau kata sandi akun ini.</p>
+        <div className="mt-8 grid gap-7">
           <EmailForm email={user.email} />
           <PasswordForm />
         </div>

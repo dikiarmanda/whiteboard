@@ -9,7 +9,7 @@ import {
   sql,
 } from "drizzle-orm";
 import { getDb } from "@/db";
-import { boards } from "@/db/schema";
+import { boards, folders } from "@/db/schema";
 import {
   emptyScene,
   MAX_BOARDS,
@@ -29,6 +29,9 @@ export type BoardSummary = {
   updatedAt: string;
   createdAt: string;
   deletedAt: string | null;
+  folderId: string | null;
+  folderName: string | null;
+  folderColor: string | null;
 };
 
 export type BoardRecord = BoardSummary & {
@@ -44,6 +47,9 @@ function toSummary(row: {
   updatedAt: Date;
   createdAt: Date;
   deletedAt: Date | null;
+  folderId: string | null;
+  folderName: string | null;
+  folderColor: string | null;
 }): BoardSummary {
   return {
     id: row.id,
@@ -54,6 +60,9 @@ function toSummary(row: {
     updatedAt: row.updatedAt.toISOString(),
     createdAt: row.createdAt.toISOString(),
     deletedAt: row.deletedAt ? row.deletedAt.toISOString() : null,
+    folderId: row.folderId,
+    folderName: row.folderName,
+    folderColor: row.folderColor,
   };
 }
 
@@ -78,6 +87,9 @@ export async function listBoards(userId: string, query: ListQuery) {
   if (query.q) {
     filters.push(ilike(boards.title, likePattern(query.q)));
   }
+  if (query.folderId) {
+    filters.push(eq(boards.folderId, query.folderId));
+  }
 
   const where = and(...filters);
   const order =
@@ -99,8 +111,12 @@ export async function listBoards(userId: string, query: ListQuery) {
         updatedAt: boards.updatedAt,
         createdAt: boards.createdAt,
         deletedAt: boards.deletedAt,
+        folderId: boards.folderId,
+        folderName: folders.name,
+        folderColor: folders.color,
       })
       .from(boards)
+      .leftJoin(folders, eq(boards.folderId, folders.id))
       .where(where)
       .orderBy(order)
       .limit(PAGE_SIZE)
@@ -130,7 +146,7 @@ export async function getBoard(userId: string, id: string) {
   } satisfies BoardRecord;
 }
 
-export async function createBoard(userId: string, title = "Board tanpa judul") {
+export async function createBoard(userId: string, title = "Board tanpa judul", folderId?: string) {
   const total = await countBoards(userId);
   if (total >= MAX_BOARDS) {
     return { error: "limit" as const };
@@ -143,6 +159,7 @@ export async function createBoard(userId: string, title = "Board tanpa judul") {
       title,
       scene: emptyScene(),
       thumbnail: null,
+      folderId: folderId || null,
     })
     .returning();
 
@@ -185,10 +202,12 @@ export type PatchInput = {
   title?: string;
   isFavorite?: boolean;
   scene?: BoardScene;
+  folderId?: string | null;
 };
 
 export async function patchBoard(userId: string, id: string, input: PatchInput) {
   const changesContent = input.title !== undefined || input.scene !== undefined;
+  const changesFolder = input.folderId !== undefined;
   if (input.scene && sceneByteLength(input.scene) > MAX_SCENE_BYTES) {
     return { error: "too-large" as const };
   }
@@ -196,10 +215,21 @@ export async function patchBoard(userId: string, id: string, input: PatchInput) 
   const db = getDb();
   const now = new Date();
 
-  if (!changesContent && input.isFavorite !== undefined) {
+  if (!changesContent && !changesFolder && input.isFavorite !== undefined) {
     const rows = await db
       .update(boards)
       .set({ isFavorite: input.isFavorite })
+      .where(and(eq(boards.id, id), eq(boards.userId, userId), isNull(boards.deletedAt)))
+      .returning();
+    const row = rows[0];
+    if (!row) return { error: "missing" as const };
+    return { board: { ...toSummary(row), scene: row.scene } };
+  }
+
+  if (!changesContent && changesFolder) {
+    const rows = await db
+      .update(boards)
+      .set({ folderId: input.folderId, updatedAt: now })
       .where(and(eq(boards.id, id), eq(boards.userId, userId), isNull(boards.deletedAt)))
       .returning();
     const row = rows[0];
@@ -214,6 +244,7 @@ export async function patchBoard(userId: string, id: string, input: PatchInput) 
     title?: string;
     scene?: BoardScene;
     isFavorite?: boolean;
+    folderId?: string | null;
     version: ReturnType<typeof sql>;
     updatedAt: Date;
   } = {
@@ -223,6 +254,7 @@ export async function patchBoard(userId: string, id: string, input: PatchInput) 
   if (input.title !== undefined) set.title = input.title;
   if (input.scene !== undefined) set.scene = input.scene;
   if (input.isFavorite !== undefined) set.isFavorite = input.isFavorite;
+  if (input.folderId !== undefined) set.folderId = input.folderId;
 
   const rows = await db
     .update(boards)

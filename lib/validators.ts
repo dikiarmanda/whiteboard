@@ -29,6 +29,7 @@ export const listQuerySchema = z.object({
   sort: z.enum(["updated", "created", "title"]).default("updated"),
   favorite: z.boolean().default(false),
   trash: z.boolean().default(false),
+  folderId: z.string().uuid().optional(),
   page: z.number().int().min(1).default(1),
 });
 
@@ -52,6 +53,7 @@ export function parseListSearchParams(
     sort: sort === "created" || sort === "title" ? sort : "updated",
     favorite: read("favorite") === "1",
     trash: trashDefault || read("trash") === "1",
+    folderId: read("folderId") || undefined,
     page: Number.isInteger(page) && page > 0 ? page : 1,
   });
 }

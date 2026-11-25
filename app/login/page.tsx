@@ -34,7 +34,7 @@ export default function LoginPage({
           <LoginContent searchParams={searchParams} />
         </Suspense>
         <p className="mt-6 text-sm text-muted">
-          <Link href="/" className="font-semibold text-stamp">
+          <Link href="/" className="font-semibold text-primary">
             Kembali ke beranda
           </Link>
         </p>

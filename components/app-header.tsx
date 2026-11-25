@@ -10,7 +10,7 @@ export function AppHeader({
 }) {
   return (
     <header className="studio bg-studio text-paper">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 sm:px-6">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-4 px-4 py-4 sm:px-6">
         <Link href="/boards" className="font-display text-2xl tracking-tight">
           Papan
         </Link>
@@ -30,8 +30,13 @@ export function AppHeader({
             Tempat sampah
           </Link>
         </nav>
-        <div className="ml-auto flex items-center gap-3 text-sm">
-          <span className="max-w-40 truncate text-paper/75">{name}</span>
+        <div className="ml-auto flex items-center gap-8 text-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full" style={{backgroundColor: 'var(--color-primary)'}}>
+              <span className="text-sm font-semibold">{name.charAt(0).toUpperCase()}</span>
+            </div>
+            <span className="max-w-32 truncate text-paper/70">{name}</span>
+          </div>
           <Link
             href="/settings"
             className={current === "settings" ? "nav-link is-on" : "nav-link"}

@@ -19,6 +19,23 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const folders = pgTable(
+  "folders",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    color: text("color").notNull().default("#7C3AED"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("folders_user_idx").on(table.userId),
+  ],
+);
+
 export const boards = pgTable(
   "boards",
   {
@@ -26,6 +43,7 @@ export const boards = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    folderId: uuid("folder_id").references(() => folders.id, { onDelete: "set null" }),
     title: text("title").notNull().default("Board tanpa judul"),
     scene: jsonb("scene").$type<BoardScene>().notNull(),
     thumbnail: text("thumbnail"),
@@ -38,6 +56,7 @@ export const boards = pgTable(
   (table) => [
     index("boards_user_updated_idx").on(table.userId, table.updatedAt.desc()),
     index("boards_user_deleted_idx").on(table.userId, table.deletedAt),
+    index("boards_folder_idx").on(table.folderId),
   ],
 );
 

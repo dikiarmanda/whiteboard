@@ -15,29 +15,37 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
         Gunakan akun yang sudah dibuat pengelola. Pendaftaran tidak dibuka.
       </p>
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
-      <label className="mt-8 block text-sm font-semibold" htmlFor="email">
-        Email
-      </label>
-      <input
-        id="email"
-        name="email"
-        type="email"
-        autoComplete="email"
-        required
-        className="field mt-2"
-        placeholder="nama@contoh.com"
-      />
-      <label className="mt-4 block text-sm font-semibold" htmlFor="password">
-        Kata sandi
-      </label>
-      <input
-        id="password"
-        name="password"
-        type="password"
-        autoComplete="current-password"
-        required
-        className="field mt-2"
-      />
+      <div className="mt-8">
+        <label className="block text-sm font-semibold" htmlFor="email">
+          Email
+        </label>
+        <div className="mt-2">
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            className="field"
+            placeholder="nama@contoh.com"
+          />
+        </div>
+      </div>
+      <div className="mt-5">
+        <label className="block text-sm font-semibold" htmlFor="password">
+          Kata sandi
+        </label>
+        <div className="mt-2">
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            className="field"
+          />
+        </div>
+      </div>
       {state.error ? (
         <p className="mt-4 text-sm font-semibold text-danger" role="alert">
           {state.error}

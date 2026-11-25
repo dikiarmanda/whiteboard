@@ -20,6 +20,7 @@ export async function POST(request: Request) {
   }
 
   let title = "Board tanpa judul";
+  let folderId: string | undefined = undefined;
   const raw = await request.text();
   if (raw) {
     let body: unknown;
@@ -28,16 +29,21 @@ export async function POST(request: Request) {
     } catch {
       return Response.json({ error: "Data tidak valid." }, { status: 400 });
     }
-    if (body && typeof body === "object" && "title" in body) {
-      const parsed = titleSchema.safeParse(body.title);
-      if (!parsed.success) {
-        return Response.json({ error: "Judul board tidak valid." }, { status: 400 });
+    if (body && typeof body === "object") {
+      if ("title" in body) {
+        const parsed = titleSchema.safeParse(body.title);
+        if (!parsed.success) {
+          return Response.json({ error: "Judul board tidak valid." }, { status: 400 });
+        }
+        title = parsed.data;
       }
-      title = parsed.data;
+      if ("folderId" in body && body.folderId) {
+        folderId = body.folderId as string;
+      }
     }
   }
 
-  const result = await createBoard(user.id, title);
+  const result = await createBoard(user.id, title, folderId);
   if (result.error === "limit") {
     return Response.json({ error: "Jumlah board sudah mencapai batas 200." }, { status: 403 });
   }

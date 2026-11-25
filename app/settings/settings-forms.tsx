@@ -19,35 +19,43 @@ export function EmailForm({ email }: { email: string }) {
   }, [state.nonce, router]);
 
   return (
-    <form action={action} className="panel py-6 pr-6">
+    <form action={action} className="panel py-7 pr-7">
       <h2 className="font-display text-2xl tracking-tight">Email</h2>
       <p className="mt-2 text-sm text-muted">Email ini dipakai untuk masuk.</p>
-      <label className="mt-5 block text-sm font-semibold" htmlFor="email-baru">
-        Email baru
-      </label>
-      <input
-        key={email}
-        id="email-baru"
-        name="email"
-        type="email"
-        autoComplete="email"
-        required
-        maxLength={320}
-        defaultValue={email}
-        className="field mt-2"
-      />
-      <label className="mt-4 block text-sm font-semibold" htmlFor="email-sandi">
-        Kata sandi saat ini
-      </label>
-      <input
-        id="email-sandi"
-        name="currentPassword"
-        type="password"
-        autoComplete="current-password"
-        required
-        maxLength={200}
-        className="field mt-2"
-      />
+      <div className="mt-5">
+        <label className="block text-sm font-semibold" htmlFor="email-baru">
+          Email baru
+        </label>
+        <div className="mt-2">
+          <input
+            key={email}
+            id="email-baru"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            maxLength={320}
+            defaultValue={email}
+            className="field"
+          />
+        </div>
+      </div>
+      <div className="mt-4">
+        <label className="block text-sm font-semibold" htmlFor="email-sandi">
+          Kata sandi saat ini
+        </label>
+        <div className="mt-2">
+          <input
+            id="email-sandi"
+            name="currentPassword"
+            type="password"
+            autoComplete="current-password"
+            required
+            maxLength={200}
+            className="field"
+          />
+        </div>
+      </div>
       <AccountFeedback state={state} />
       <button type="submit" className="btn mt-6" disabled={pending}>
         {pending ? "Menyimpan…" : "Simpan email"}
@@ -65,47 +73,59 @@ export function PasswordForm() {
   }, [state.nonce]);
 
   return (
-    <form ref={formRef} action={action} className="panel py-6 pr-6">
+    <form ref={formRef} action={action} className="panel py-7 pr-7">
       <h2 className="font-display text-2xl tracking-tight">Kata sandi</h2>
       <p className="mt-2 text-sm text-muted">Minimal 8 karakter.</p>
-      <label className="mt-5 block text-sm font-semibold" htmlFor="sandi-saat-ini">
-        Kata sandi saat ini
-      </label>
-      <input
-        id="sandi-saat-ini"
-        name="currentPassword"
-        type="password"
-        autoComplete="current-password"
-        required
-        maxLength={200}
-        className="field mt-2"
-      />
-      <label className="mt-4 block text-sm font-semibold" htmlFor="sandi-baru">
-        Kata sandi baru
-      </label>
-      <input
-        id="sandi-baru"
-        name="password"
-        type="password"
-        autoComplete="new-password"
-        required
-        minLength={8}
-        maxLength={200}
-        className="field mt-2"
-      />
-      <label className="mt-4 block text-sm font-semibold" htmlFor="sandi-ulang">
-        Ulangi kata sandi baru
-      </label>
-      <input
-        id="sandi-ulang"
-        name="confirmPassword"
-        type="password"
-        autoComplete="new-password"
-        required
-        minLength={8}
-        maxLength={200}
-        className="field mt-2"
-      />
+      <div className="mt-5">
+        <label className="block text-sm font-semibold" htmlFor="sandi-saat-ini">
+          Kata sandi saat ini
+        </label>
+        <div className="mt-2">
+          <input
+            id="sandi-saat-ini"
+            name="currentPassword"
+            type="password"
+            autoComplete="current-password"
+            required
+            maxLength={200}
+            className="field"
+          />
+        </div>
+      </div>
+      <div className="mt-4">
+        <label className="block text-sm font-semibold" htmlFor="sandi-baru">
+          Kata sandi baru
+        </label>
+        <div className="mt-2">
+          <input
+            id="sandi-baru"
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            required
+            minLength={8}
+            maxLength={200}
+            className="field"
+          />
+        </div>
+      </div>
+      <div className="mt-4">
+        <label className="block text-sm font-semibold" htmlFor="sandi-ulang">
+          Ulangi kata sandi baru
+        </label>
+        <div className="mt-2">
+          <input
+            id="sandi-ulang"
+            name="confirmPassword"
+            type="password"
+            autoComplete="new-password"
+            required
+            minLength={8}
+            maxLength={200}
+            className="field"
+          />
+        </div>
+      </div>
       <AccountFeedback state={state} />
       <button type="submit" className="btn mt-6" disabled={pending}>
         {pending ? "Menyimpan…" : "Simpan kata sandi"}
@@ -124,7 +144,7 @@ function AccountFeedback({ state }: { state: AccountState }) {
   }
   if (state.message) {
     return (
-      <p className="mt-4 text-sm font-semibold text-stamp" role="status">
+      <p className="mt-4 text-sm font-semibold text-primary" role="status">
         {state.message}
       </p>
     );
