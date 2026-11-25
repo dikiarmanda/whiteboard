@@ -48,8 +48,8 @@ function toSummary(row: {
   createdAt: Date;
   deletedAt: Date | null;
   folderId: string | null;
-  folderName: string | null;
-  folderColor: string | null;
+  folderName?: string | null;
+  folderColor?: string | null;
 }): BoardSummary {
   return {
     id: row.id,
@@ -61,8 +61,8 @@ function toSummary(row: {
     createdAt: row.createdAt.toISOString(),
     deletedAt: row.deletedAt ? row.deletedAt.toISOString() : null,
     folderId: row.folderId,
-    folderName: row.folderName,
-    folderColor: row.folderColor,
+    folderName: row.folderName ?? null,
+    folderColor: row.folderColor ?? null,
   };
 }
 
