@@ -100,35 +100,33 @@ export async function listBoards(userId: string, query: ListQuery) {
         : desc(boards.updatedAt);
 
   const db = getDb();
-  const [rows, totalRows] = await Promise.all([
-    db
-      .select({
-        id: boards.id,
-        title: boards.title,
-        thumbnail: boards.thumbnail,
-        isFavorite: boards.isFavorite,
-        version: boards.version,
-        updatedAt: boards.updatedAt,
-        createdAt: boards.createdAt,
-        deletedAt: boards.deletedAt,
-        folderId: boards.folderId,
-        folderName: folders.name,
-        folderColor: folders.color,
-      })
-      .from(boards)
-      .leftJoin(folders, eq(boards.folderId, folders.id))
-      .where(where)
-      .orderBy(order)
-      .limit(PAGE_SIZE)
-      .offset((query.page - 1) * PAGE_SIZE),
-    db.select({ value: sql<number>`count(*)::int` }).from(boards).where(where),
-  ]);
+  const rows = await db
+    .select({
+      id: boards.id,
+      title: boards.title,
+      thumbnail: boards.thumbnail,
+      isFavorite: boards.isFavorite,
+      version: boards.version,
+      updatedAt: boards.updatedAt,
+      createdAt: boards.createdAt,
+      deletedAt: boards.deletedAt,
+      folderId: boards.folderId,
+      folderName: folders.name,
+      folderColor: folders.color,
+      total: sql<number>`count(*) over ()::int`,
+    })
+    .from(boards)
+    .leftJoin(folders, eq(boards.folderId, folders.id))
+    .where(where)
+    .orderBy(order)
+    .limit(PAGE_SIZE)
+    .offset((query.page - 1) * PAGE_SIZE);
 
   return {
-    boards: rows.map(toSummary),
+    boards: rows.map(({ total: _total, ...row }) => toSummary(row)),
     page: query.page,
     pageSize: PAGE_SIZE,
-    total: totalRows[0]?.value ?? 0,
+    total: rows[0]?.total ?? 0,
   };
 }
 

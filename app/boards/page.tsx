@@ -6,6 +6,7 @@ import { BoardToolbar, Pager } from "@/components/board-toolbar";
 import { NewBoardButton } from "@/components/new-board-button";
 import { FolderSidebar } from "@/components/folder-sidebar";
 import { listBoards } from "@/lib/boards";
+import { listFolders } from "@/lib/folders";
 import { formatWaktu } from "@/lib/format";
 import { PAGE_SIZE } from "@/lib/scene";
 import { requireUser } from "@/lib/session";
@@ -20,14 +21,17 @@ async function BoardsContent({
   if (!user) redirect("/login");
 
   const query = parseListSearchParams(await searchParams, false);
-  const result = await listBoards(user.id, query);
+  const [result, folders] = await Promise.all([
+    listBoards(user.id, query),
+    listFolders(user.id),
+  ]);
   const empty = result.total === 0;
 
   return (
     <>
       <AppHeader name={user.name || user.email || "Pengguna"} current="boards" />
       <main className="mx-auto flex max-w-7xl px-4 py-10 sm:px-6">
-        <FolderSidebar currentFolderId={query.folderId} userId={user.id} />
+        <FolderSidebar currentFolderId={query.folderId} folders={folders} />
         <div className="flex-1 pl-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>

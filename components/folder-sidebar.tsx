@@ -1,39 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { FolderSummary } from "@/lib/folders";
 
 export function FolderSidebar({
   currentFolderId,
-  userId,
+  folders: initialFolders,
 }: {
   currentFolderId?: string;
-  userId: string;
+  folders: FolderSummary[];
 }) {
-  const [folders, setFolders] = useState<FolderSummary[]>([]);
-  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const [folders, setFolders] = useState<FolderSummary[]>(initialFolders);
   const [showCreate, setShowCreate] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [creating, setCreating] = useState(false);
-
-  useEffect(() => {
-    loadFolders();
-  }, [userId]);
-
-  async function loadFolders() {
-    try {
-      const response = await fetch("/api/folders");
-      const data = await response.json();
-      if (response.ok) {
-        setFolders(data.folders);
-      }
-    } catch (error) {
-      console.error("Failed to load folders:", error);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   async function createFolder(e: React.FormEvent) {
     e.preventDefault();
@@ -51,6 +34,7 @@ export function FolderSidebar({
         setFolders([...folders, data.folder]);
         setNewFolderName("");
         setShowCreate(false);
+        router.refresh();
       }
     } catch (error) {
       console.error("Failed to create folder:", error);
@@ -80,27 +64,23 @@ export function FolderSidebar({
           Semua board
         </Link>
 
-        {loading ? (
-          <p className="px-3 py-2 text-sm text-muted">Memuat folder...</p>
-        ) : (
-          folders.map((folder) => (
-            <Link
-              key={folder.id}
-              href={`/boards?folderId=${folder.id}`}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-                currentFolderId === folder.id
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted hover:bg-ink/5"
-              }`}
-            >
-              <span
-                className="h-3 w-3 rounded-full"
-                style={{ backgroundColor: folder.color }}
-              />
-              {folder.name}
-            </Link>
-          ))
-        )}
+        {folders.map((folder) => (
+          <Link
+            key={folder.id}
+            href={`/boards?folderId=${folder.id}`}
+            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+              currentFolderId === folder.id
+                ? "bg-primary/10 text-primary"
+                : "text-muted hover:bg-ink/5"
+            }`}
+          >
+            <span
+              className="h-3 w-3 rounded-full"
+              style={{ backgroundColor: folder.color }}
+            />
+            {folder.name}
+          </Link>
+        ))}
       </nav>
 
       {showCreate ? (
